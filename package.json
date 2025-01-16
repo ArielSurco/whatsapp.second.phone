@@ -1,0 +1,26 @@
+{
+  "name": "whatsapp.unified.phone.numbers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix --ext .tsx,.ts,.jsx,.js,.cjs,.mjs",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "2.13.0",
+    "@typescript-eslint/eslint-plugin": "8.20.0",
+    "@typescript-eslint/parser": "8.20.0",
+    "eslint": "8.56.0",
+    "eslint-config-prettier": "10.0.1",
+    "eslint-plugin-import": "2.31.0",
+    "eslint-plugin-unicorn": "56.0.1",
+    "prettier": "3.4.2"
+  }
+}
