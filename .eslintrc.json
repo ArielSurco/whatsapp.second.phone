@@ -16,12 +16,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "@stylistic",
-    "@typescript-eslint",
-    "import",
-    "unicorn"
-  ],
+  "plugins": ["@stylistic", "@typescript-eslint", "import", "unicorn"],
   "reportUnusedDisableDirectives": true,
   "rules": {
     "eqeqeq": [
@@ -66,15 +61,7 @@
           "order": "asc",
           "caseInsensitive": true
         },
-        "groups": [
-          "type",
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index"
-        ],
+        "groups": ["type", "builtin", "external", "internal", "parent", "sibling", "index"],
         "newlines-between": "always",
         "pathGroups": [
           {
@@ -83,10 +70,7 @@
             "position": "after"
           }
         ],
-        "pathGroupsExcludedImportTypes": [
-          "builtin",
-          "internal"
-        ],
+        "pathGroupsExcludedImportTypes": ["builtin", "internal"],
         "warnOnUnassignedImports": true
       }
     ],
@@ -114,25 +98,13 @@
       },
       {
         "blankLine": "always",
-        "prev": [
-          "const",
-          "let",
-          "var"
-        ],
+        "prev": ["const", "let", "var"],
         "next": "*"
       },
       {
         "blankLine": "any",
-        "prev": [
-          "singleline-const",
-          "singleline-let",
-          "singleline-var"
-        ],
-        "next": [
-          "singleline-const",
-          "singleline-let",
-          "singleline-var"
-        ]
+        "prev": ["singleline-const", "singleline-let", "singleline-var"],
+        "next": ["singleline-const", "singleline-let", "singleline-var"]
       }
     ],
     "@typescript-eslint/consistent-type-exports": [
@@ -160,22 +132,15 @@
     "@typescript-eslint/naming-convention": [
       "error",
       {
-        "format": [
-          "PascalCase"
-        ],
-        "selector": [
-          "typeLike",
-          "enumMember"
-        ]
+        "format": ["PascalCase"],
+        "selector": ["typeLike", "enumMember"]
       },
       {
         "custom": {
           "match": false,
           "regex": "^I[A-Z]|^(Interface|Props|State)$"
         },
-        "format": [
-          "PascalCase"
-        ],
+        "format": ["PascalCase"],
         "selector": "interface"
       }
     ],
@@ -219,6 +184,8 @@
       }
     ],
     "unicorn/no-empty-file": "error",
-    "unicorn/prefer-node-protocol": "warn"
+    "unicorn/prefer-node-protocol": "warn",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/no-floating-promises": "off"
   }
 }

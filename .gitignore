@@ -30,6 +30,7 @@ coverage/
 .cache/
 .temp/
 .tmp/
+auth_info_baileys/
 
 # Environment variables
 .env
