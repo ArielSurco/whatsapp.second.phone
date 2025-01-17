@@ -6,6 +6,9 @@ import makeWASocket, {
   type proto,
   useMultiFileAuthState,
 } from '@whiskeysockets/baileys'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 let sock: ReturnType<typeof makeWASocket>
 
@@ -29,11 +32,19 @@ async function getGroupFromSubject(subject: string): Promise<GroupMetadata | nul
   return groups.find((group) => group.subject === subject) ?? null
 }
 
-async function createGroup(
-  sourceChatParticipantId: string,
-  groupName: string,
-): Promise<GroupMetadata> {
-  const group = await sock.groupCreate(groupName, [sourceChatParticipantId])
+async function getGroupFromMessage(message: proto.IWebMessageInfo): Promise<GroupMetadata | null> {
+  const groupJid = message.key.remoteJid ?? ''
+
+  const group = await sock.groupMetadata(groupJid)
+
+  return group
+}
+
+async function createGroup(groupName: string): Promise<GroupMetadata> {
+  const redirectNumber = process.env.REDIRECT_NUMBER
+  const redirectNumberJid = `${redirectNumber ?? ''}@s.whatsapp.net`
+
+  const group = await sock.groupCreate(groupName, [redirectNumberJid])
 
   return group
 }
@@ -42,15 +53,24 @@ async function redirectMessage(message: proto.IWebMessageInfo) {
   const groupSubject = getGroupSubjectFromMessage(message)
   let redirectGroup = await getGroupFromSubject(groupSubject)
 
-  console.log('existing group', redirectGroup)
-
   if (!redirectGroup) {
-    redirectGroup = await createGroup(message.key.remoteJid ?? '', groupSubject)
+    redirectGroup = await createGroup(groupSubject)
+
+    await sock.groupUpdateDescription(redirectGroup.id, message.key.remoteJid ?? '')
   }
 
-  console.log('new group', redirectGroup)
-
   await sock.sendMessage(redirectGroup.id, { forward: message })
+}
+
+async function sendMessageFromRedirectGroup(message: proto.IWebMessageInfo) {
+  const redirectGroup = await getGroupFromMessage(message)
+  const isForwarded = Boolean(message.message?.extendedTextMessage?.contextInfo?.isForwarded)
+
+  if (redirectGroup && !isForwarded && message.message && message.key.id) {
+    const sourceChatJid = redirectGroup.desc ?? ''
+
+    await sock.relayMessage(sourceChatJid, message.message, { messageId: message.key.id })
+  }
 }
 
 async function connectToWhatsApp() {
@@ -60,6 +80,8 @@ async function connectToWhatsApp() {
     // can provide additional config here
     auth: state,
     printQRInTerminal: true,
+    syncFullHistory: false,
+    shouldSyncHistoryMessage: () => false,
   })
 
   sock.ev.on('connection.update', async (update) => {
@@ -86,11 +108,17 @@ async function connectToWhatsApp() {
     }
   })
   sock.ev.on('messages.upsert', (event) => {
-    console.log(event.messages)
-
     for (const message of event.messages) {
+      if (!message.message) {
+        continue
+      }
+
       if (message.key.remoteJid && !message.key.fromMe) {
         redirectMessage(message)
+      }
+
+      if (message.key.remoteJid && message.key.fromMe) {
+        sendMessageFromRedirectGroup(message)
       }
     }
   })
